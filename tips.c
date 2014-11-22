@@ -29,8 +29,7 @@
 #define MAXFILENAME	20
 #define MAXKEYLENGTH	20
 #define MAXLINELENGTH	1024
-#define DEFAULTDATAFILE	"./info.test"
-// #define DEFAULTDATAFILE	"~/info.txt"
+#define DEFAULTDATAFILE	"/home/dean/info.txt"
 #define TOPICSTARTSIG "-["
 #define TOPICENDSIG "]-"
 
