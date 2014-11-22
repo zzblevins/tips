@@ -40,12 +40,9 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	char filename[MAXFILENAME];
-	char *il; 
-	char *tok;
-	char *tl;
 	char keyword[MAXKEYLENGTH];
-	char textline[MAXKEYLENGTH];
-	char tokenline[MAXKEYLENGTH];
+	char tok[MAXKEYLENGTH] = "";
+	char textline[MAXLINELENGTH];
 
 	int o;
 	int fflag =		0;
@@ -54,7 +51,7 @@ main(int argc, char *argv[])
 
 	int maxline =		MAXLINELENGTH; 
 
-	while ((o = getopt(argc, argv, "vxf:h")) != -1) {
+	while ((o = getopt(argc, argv, "vf:h")) != -1) {
 		switch (o) {
 			case 'v':
 				vflag = 1;
@@ -71,8 +68,11 @@ main(int argc, char *argv[])
 				exit(0);
 				break;
 			case '?':
-				if (isprint(optopt))
-					fprintf(stderr, "Unknown option '-%c'.\n", optopt);
+				if (optopt == 'f') {
+					exit (-1);
+				} else if (isprint(optopt)) {
+					exit (-1);
+				}
 				break;
 			default:
 				break;
@@ -90,9 +90,10 @@ main(int argc, char *argv[])
 	}
 
 	// Dump the whole file if no keyword given
-
-	if (argc == 1) 
+	
+	if (argc == optind) {
 		dumpfile = TRUE;
+	}
 
 	// Use the default info file if none provided
 
@@ -121,36 +122,33 @@ main(int argc, char *argv[])
 
 	// Find the start definition
 	
-	while ( ( fgets(tokenline, maxline, fp) ) != NULL) {
+	while ( ( fgets(textline, maxline, fp) ) != NULL) {
 		if (dumpfile) {
-			printf("%s", tokenline);
+			printf("%s", textline);
 		}
 
-		if ( tok = strstr(tokenline, TOPICSTARTSIG )) {
+		if ( strstr(textline, TOPICSTARTSIG )) {
 
 			// Found first marker, now find keyword match
+			strcpy(tok, keyword);	// Refresh the keyword
 	
-			if (vflag) {
-				printf("@TopicStart = %s\n", TOPICSTARTSIG);
-			}
+			if ( (strstr(textline, tok) ) != NULL) {
 
-			if (  (tl = strstr(tok, keyword) ) != NULL) {
-
-				// Found keyword match, dump lines until end marker
+				// Found keyword/tok match, dump lines until end marker
 
 				if (vflag) {
-					printf("@KeyWord found in  %s\n", tl);
+					printf("@KeyWord found in  %s\n", textline);
 				}
 
-				while ( ( tl = fgets(textline, maxline, fp) ) != NULL) {
-					if ( strstr(tl, TOPICENDSIG ) ) {
+				while ( ( fgets(textline, maxline, fp) ) != NULL) {
+					if ( strstr(textline, TOPICENDSIG ) ) {
 						if (vflag) {
-							printf("@TopicEND = %s\n", TOPICENDSIG);
+							printf("@TopicEND = %s\n", textline);
 						}
 						return (0);
 					} 
 
-					printf("%s", tl);
+					printf("%s", textline);
 				}
 			}
 		}
