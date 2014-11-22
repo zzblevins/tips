@@ -13,6 +13,9 @@ tips: tips.c
 debug: tips.c
 	$(CC) $(DEBUG) tips.c -o tips.debug
 
+tipscheckfile: tipscheckfile.c
+	$(CC) $(DEBUG) tipscheckfile.c -o tipscheckfile
+
 install:
 	cp -f tips ~/bin
 
