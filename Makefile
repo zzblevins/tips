@@ -7,21 +7,23 @@ CC = g++
 DEBUG = -ggdb
 DATE = `date +%Y%m%d%H%M`
 
-tips: tips.c
-	$(CC) tips.c -o tips
+APP = tips
 
-debug: tips.c
-	$(CC) $(DEBUG) tips.c -o tips.debug
+$(APP): $(APP).c
+	$(CC) $(APP).c -o $(APP)
+
+debug: $(APP).c
+	$(CC) $(DEBUG) $(APP).c -o $(APP).debug
 
 tipscheckfile: tipscheckfile.c
 	$(CC) $(DEBUG) tipscheckfile.c -o tipscheckfile
 
 install:
-	cp -f tips ~/bin
+	cp -f $(APP) ~/bin
 
 backup:
-	cp -f tips.c /nfs/projnfs/backups/tips/tips.c.$(DATE)
-	cp -f Makefile /nfs/projnfs/backups/tips/Makefile.$(DATE)
+	cp -f $(APP).c /nfs/projnfs/backups/$(APP)/tips.c.$(DATE)
+	cp -f Makefile /nfs/projnfs/backups/$(APP)/Makefile.$(DATE)
 
 clean:
-	rm *.o
+	rm -f *.o ; rm $(APP)
