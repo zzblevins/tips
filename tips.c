@@ -23,6 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <getopt.h>
 
 #define TRUE		1
 #define FALSE		(!TRUE)
@@ -50,8 +51,25 @@ main(int argc, char *argv[])
 
 	int maxline =		MAXLINELENGTH; 
 
-	while ((o = getopt(argc, argv, "vf:h")) != -1) {
-		switch (o) {
+	int opt;
+	int option_index =	0;
+
+	static const char *opt_string = "vhf:";
+
+	static struct option long_options[] =
+	{
+		/* These options set a flag */
+		{"help", 	no_argument,		NULL,	'h'},
+		{"file", 	required_argument,	NULL,	'f'},
+		{"verbose",	no_argument,		NULL,	'v'},
+		{0, 0, 0, 0}
+	};
+
+	opt = getopt_long(argc, argv, opt_string, long_options, &option_index);
+
+	while (opt != -1 ) {
+
+		switch (opt) {
 			case 'v':
 				vflag = 1;
 				break;
@@ -59,24 +77,19 @@ main(int argc, char *argv[])
 				fflag = 1;
 				strcpy(filename, optarg);
 				break;
-			case 'h':
-				printf("Syntax: %s [-v] [-x] [-f datafile] keyword\n", argv[0]);
-				printf(" -h : syntax\n");
-				printf(" -v : verbose output for debug\n");
-				printf(" -f datafile : alternative datfile (default=%s)\n", DEFAULTDATAFILE );
+			case 'h':printf("Syntax: %s [-v] [-f datafile] keyword\n", argv[0]);
+				printf(" -h, --help : syntax\n");
+				printf(" -v, --verbose : verbose output for debug\n");
+				printf(" -f, --file datafile : alternative datfile (default=%s)\n", DEFAULTDATAFILE);
 				exit(0);
-				break;
-			case '?':
-				if (optopt == 'f') {
-					exit (-1);
-				} else if (isprint(optopt)) {
-					exit (-1);
-				}
 				break;
 			default:
 				break;
 		}
+
+		opt = getopt_long (argc, argv, opt_string, long_options, &option_index);
 	}
+
 
 	// Reasonable command line options?
 	// -v must have a keyword
@@ -112,7 +125,7 @@ main(int argc, char *argv[])
 		printf("@filename = %s\n", filename);
 	}
 
-	// Open  and work on the source file
+	// Open and work on the source file
 
 	if ( ( fp = fopen(filename, "r") ) == NULL) {
 			printf("Error: Can't read %s\n", filename);
